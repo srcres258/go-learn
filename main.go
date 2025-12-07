@@ -2,27 +2,35 @@ package main
 
 import (
 	"fmt"
-	"time"
+	"sync"
 )
 
-var done = make(chan struct{})
+var sum int
 
-func event() {
-	fmt.Println("event begin")
-	time.Sleep(2 * time.Second)
-	fmt.Println("event end")
-	close(done)
+var wait sync.WaitGroup
+
+func add() {
+	for i := 0; i < 100000; i++ {
+		sum++
+	}
+	wait.Done()
+}
+
+func sub() {
+	for i := 0; i < 100000; i++ {
+		sum--
+	}
+	wait.Done()
 }
 
 func main() {
-	go event()
+	wait.Add(2)
 
-	select {
-	case <- done:
-		fmt.Println("received done signal")
-	case <- time.After(1 * time.Second):
-		fmt.Println("timeout occurred")
-		return
-	}
+	go add()
+	go sub()
+
+	wait.Wait()
+
+	fmt.Println("Final sum:", sum)
 }
 

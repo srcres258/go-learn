@@ -1,20 +1,17 @@
 package main
 
 import "fmt"
+import "encoding/json"
 
-type UserInfo struct {
+type User struct {
 	Name string `json:"name"`
-}
-
-func (this *UserInfo)SetName(name string) {
-	this.Name = name
+	Age int `json:"age,omitempty"`
+	Password string `json:"-"`
 }
 
 func main() {
-	user := UserInfo{
-		Name: "Alice",
-	}
-	user.SetName("Bob")
-	fmt.Println(user.Name)
+	user := User { Name: "Alice", Age: 0, Password: "123456" }
+	byteData, _ := json.Marshal(user)
+	fmt.Println(string(byteData))
 }
 

@@ -1,18 +1,21 @@
 package main
 
-import "fmt"
-
-var maps = map[int]string{}
+import (
+	"fmt"
+	"sync"
+)
 
 func main() {
+	var maps = sync.Map{}
 	go func() {
 		for {
-			maps[1] = "foo"
+			maps.Store(1, "hello")
 		}
 	}()
 	go func() {
 		for {
-			fmt.Println(maps[1])
+			v, ok := maps.Load(1)
+			fmt.Println(v, ok)
 		}
 	}()
 

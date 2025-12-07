@@ -1,38 +1,15 @@
 package main
 
-type Code int
+import "fmt"
 
-func (code Code)GetMsg() (msg string) {
-	switch code {
-		case SuccessCode:
-			return "Success"
-		case ServiceErrCode:
-			return "Service Error"
-		case NetworkErrCode:
-			return "Network Error"
-	}
-	return ""
-}
-func (c Code) Ok() (code Code, msg string) {
-	return c, c.GetMsg()
-}
+type MyCode int
+type MyAliasCode = int
 
-const (
-	SuccessCode    Code = 0
-	ServiceErrCode Code = 1001
-	NetworkErrCode Code = 1002
-)
-
-func webServer(name string) (code Code, msg string) {
-	if name == "1" {
-		return ServiceErrCode.Ok()
-	}
-	if name == "2" {
-		return NetworkErrCode.Ok()
-	}
-	return SuccessCode.Ok()
-}
+const myCode MyCode = 1
+const myAliasCode MyAliasCode = 1
 
 func main() {
+	fmt.Printf("%v,%T\n", myCode, myCode)
+	fmt.Printf("%v,%T\n", myAliasCode, myAliasCode)
 }
 

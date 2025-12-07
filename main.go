@@ -1,36 +1,21 @@
 package main
 
-import (
-	"fmt"
-	"sync"
-)
+import "fmt"
 
-var sum int
-
-var wait sync.WaitGroup
-
-func add() {
-	for i := 0; i < 100000; i++ {
-		sum++
-	}
-	wait.Done()
-}
-
-func sub() {
-	for i := 0; i < 100000; i++ {
-		sum--
-	}
-	wait.Done()
-}
+var maps = map[int]string{}
 
 func main() {
-	wait.Add(2)
+	go func() {
+		for {
+			maps[1] = "foo"
+		}
+	}()
+	go func() {
+		for {
+			fmt.Println(maps[1])
+		}
+	}()
 
-	go add()
-	go sub()
-
-	wait.Wait()
-
-	fmt.Println("Final sum:", sum)
+	select{}
 }
 

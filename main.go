@@ -2,24 +2,19 @@ package main
 
 import "fmt"
 
-type Animal struct {
-	Name string
+type UserInfo struct {
+	Name string `json:"name"`
 }
 
-type Animal1 struct {
-	Name1 string
-}
-
-type Cat struct {
-	Animal
-	Animal1
+func (this *UserInfo)SetName(name string) {
+	this.Name = name
 }
 
 func main() {
-	var animal = Animal { Name: "Cat" }
-	cat := Cat {
-		Animal: animal,
+	user := UserInfo{
+		Name: "Alice",
 	}
-	fmt.Println(cat.Name, cat.Name1)
+	user.SetName("Bob")
+	fmt.Println(user.Name)
 }
 

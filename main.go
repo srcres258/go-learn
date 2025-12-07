@@ -1,17 +1,38 @@
 package main
 
-import "fmt"
-import "encoding/json"
+type Code int
 
-type User struct {
-	Name string `json:"name"`
-	Age int `json:"age,omitempty"`
-	Password string `json:"-"`
+func (code Code)GetMsg() (msg string) {
+	switch code {
+		case SuccessCode:
+			return "Success"
+		case ServiceErrCode:
+			return "Service Error"
+		case NetworkErrCode:
+			return "Network Error"
+	}
+	return ""
+}
+func (c Code) Ok() (code Code, msg string) {
+	return c, c.GetMsg()
+}
+
+const (
+	SuccessCode    Code = 0
+	ServiceErrCode Code = 1001
+	NetworkErrCode Code = 1002
+)
+
+func webServer(name string) (code Code, msg string) {
+	if name == "1" {
+		return ServiceErrCode.Ok()
+	}
+	if name == "2" {
+		return NetworkErrCode.Ok()
+	}
+	return SuccessCode.Ok()
 }
 
 func main() {
-	user := User { Name: "Alice", Age: 0, Password: "123456" }
-	byteData, _ := json.Marshal(user)
-	fmt.Println(string(byteData))
 }
 

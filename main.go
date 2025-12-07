@@ -5,13 +5,16 @@ import "time"
 import "sync"
 
 var moneyChan = make(chan int)
+var nameChan = make(chan string)
+var doneChan = make(chan struct{})
 
-func pay(name string, money int, wait *sync.WaitGroup) {
+func send(name string, money int, wait *sync.WaitGroup) {
 	fmt.Println(name, "started shopping")
 	time.Sleep(1 * time.Second)
 	fmt.Println(name, "finished shopping")
 
 	moneyChan <- money
+	nameChan <- name
 
 	wait.Done()
 }
@@ -23,13 +26,15 @@ func main() {
 
 	wait.Add(3)
 
-	go pay("Alpha", 2, &wait)
-	go pay("Bravo", 3, &wait)
-	go pay("Charlie", 5, &wait)
+	go send("Alpha", 2, &wait)
+	go send("Bravo", 3, &wait)
+	go send("Charlie", 5, &wait)
 
 	go func() {
 		wait.Wait()
 		close(moneyChan)
+		close(nameChan)
+		close(doneChan)
 	}()
 
 	// for {
@@ -40,12 +45,31 @@ func main() {
 	// 	}
 	// }
 	var moneyList []int
-	for money := range moneyChan {
-		fmt.Println("Received money:", money)
-		moneyList = append(moneyList, money)
+	var nameList []string
+	// go func() {
+	// 	for money := range moneyChan {
+	// 		fmt.Println("Received money:", money)
+	// 		moneyList = append(moneyList, money)
+	// 	}
+	// }()
+	// for name := range nameChan {
+	// 	nameList = append(nameList, name)
+	// }
+	var event = func () {
+		for {
+			select {
+			case money := <- moneyChan:
+				moneyList = append(moneyList, money)
+			case name := <- nameChan:
+				nameList = append(nameList, name)
+			case <- doneChan:
+				return
+			}
+		}
 	}
-
+	event()
 	fmt.Println("All shopping done, time:", time.Since(start))
 	fmt.Println("Money received:", moneyList)
+	fmt.Println("Names received:", nameList)
 }
 

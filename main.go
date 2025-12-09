@@ -5,28 +5,31 @@ import (
 	"reflect"
 )
 
-type User struct {
-	Name1 string `big:"-"`
-	Name2 string
+type User struct {}
+
+func (User) Call(name string) {
+	fmt.Println("我被调用了", name)
 }
 
-func SetStruct(obj any) {
+func Call(obj any) {
 	v := reflect.ValueOf(obj).Elem()
 	t := reflect.TypeOf(obj).Elem()
 
-	for i := 0; i < v.NumField(); i++ {
-		value := v.Field(i)
-		big := t.Field(i).Tag.Get("big")
-		if big == "" {
+	for i := 0; i < v.NumMethod(); i++ {
+		m := t.Method(i)
+		fmt.Println("方法名:", m.Name)
+		if m.Name != "Call" {
 			continue
 		}
-		value.SetString(value.String() + " modified")
+		method := v.Method(i)
+		method.Call([]reflect.Value{
+			reflect.ValueOf("zhangsan"),
+		})
 	}
 }
 
 func main() {
-	s := User { Name1: "name1", Name2: "name2" }
-	SetStruct(&s)
-	fmt.Println(s)
+	s := User {}
+	Call(&s)
 }
 

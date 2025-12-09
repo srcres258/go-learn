@@ -5,32 +5,28 @@ import (
 	"reflect"
 )
 
-type Student struct {
-	Name string `json:"name"`
-	Age int
-	IsMan bool
+type User struct {
+	Name1 string `big:"-"`
+	Name2 string
 }
 
-func ParseJson(obj any) {
-	v := reflect.ValueOf(obj)
-	t := reflect.TypeOf(obj)
+func SetStruct(obj any) {
+	v := reflect.ValueOf(obj).Elem()
+	t := reflect.TypeOf(obj).Elem()
+
 	for i := 0; i < v.NumField(); i++ {
-		tf := t.Field(i)
-		jsonTag := tf.Tag.Get("json")
-		if jsonTag == "" {
-			jsonTag = tf.Name
+		value := v.Field(i)
+		big := t.Field(i).Tag.Get("big")
+		if big == "" {
+			continue
 		}
-		fmt.Printf("%s, %s, %#v\n", tf.Name, tf.Tag, jsonTag)
-		fmt.Println(v.Field(i))
+		value.SetString(value.String() + " modified")
 	}
 }
 
 func main() {
-	s := Student {
-		Name: "田所浩二",
-		Age: 24,
-		IsMan: true,
-	}
-	ParseJson(s)
+	s := User { Name1: "name1", Name2: "name2" }
+	SetStruct(&s)
+	fmt.Println(s)
 }
 

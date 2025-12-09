@@ -1,78 +1,61 @@
 package main
 
 import (
+	"os"
+	"bufio"
 	"fmt"
-	// "encoding/json"
+	// "io"
 )
 
-type Number interface {
-	int | int8 | int16 | int32 | int64 | uint |
-		uint8 | uint16 | uint32 | uint64
-}
-
-func plus[T int | uint](n1, n2 T) T {
-	return n1 + n2
-}
-
-type Response[T any] struct {
-	Code int `json:"code"`
-	Msg string `json:"msg"`
-	Data T `json:"data"`
-}
-
-type User struct {
-	Name string `json:"name"`
-}
-
-type UserInfo struct {
-	Name string `json:"name"`
-	Age int `json:"age"`
-}
-
 func main() {
-	// plus(1, 2)
-	// var u1, u2 = uint(1), uint(2)
-	// plus(u1, u2)
-
-	// user := Response {
-	// 	Code: 0,
-	// 	Msg: "成功",
-	// 	Data: User {
-	// 		Name: "张三",
-	// 	},
+	// byteData, err := os.ReadFile("111")
+	// byteData, err := os.ReadFile("/home/srcres/Coding/Learn/go-learn/test.txt")
+	// byteData, err := os.ReadFile("test.txt")
+	// if err != nil {
+	// 	fmt.Println("Error reading file:", err)
+	// 	return
 	// }
-	// byteData, _ := json.Marshal(user)
-	// fmt.Println(string(byteData))
-	//
-	// userInfo := Response {
-	// 	Code: 0,
-	// 	Msg: "成功",
-	// 	Data: UserInfo {
-	// 		Name: "张三",
-	// 		Age: 18,
-	// 	},
+	// fmt.Println("File content:", string(byteData))
+
+	// file, err := os.Open("test.txt")
+	// if err != nil {
+	// 	panic(err)
 	// }
-	// byteData, _ = json.Marshal(userInfo)
-	// fmt.Println(string(byteData))
+	// defer file.Close()
+	// for {
+	// 	var byteData = make([]byte, 15)
+	// 	n, err := file.Read(byteData)
+	// 	if err == io.EOF {
+	// 		break
+	// 	}
+	// 	fmt.Println(string(byteData[:n]))
+	// }
 
-	// var userResponse Response[User]
-	// json.Unmarshal([]byte(`{"code":0,"msg":"成功","data":{"name":"张三"}}`), &userResponse)
-	// fmt.Println(userResponse)
-	// fmt.Println(userResponse.Data.Name)
-	//
-	// var userInfoResponse Response[UserInfo]
-	// json.Unmarshal([]byte(`{"code":0,"msg":"成功","data":{"name":"张三","age":18}}`), &userInfoResponse)
-	// fmt.Println(userInfoResponse)
-	// fmt.Println(userInfoResponse.Data.Name, userInfoResponse.Data.Age)
+	// file, err := os.Open("test.txt")
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// defer file.Close()
+	// buf := bufio.NewReader(file)
+	// for {
+	// 	line, _, err := buf.ReadLine()
+	// 	if err == io.EOF {
+	// 		break
+	// 	}
+	// 	fmt.Println(string(line))
+	// }
 
-	// type MySlice [T int | string] []T
-	// var mySlice = MySlice[int] {1,2,3}
-	// fmt.Println(mySlice)
-
-	type MyMap[T string, K any] map[T]K
-	var myMap = MyMap[string, string]{
-		"name": "12",
+	file, err := os.Open("test.txt")
+	if err != nil {
+		panic(err)
 	}
-	fmt.Println(myMap)
+	defer file.Close()
+	buf := bufio.NewScanner(file)
+	buf.Split(bufio.ScanWords)
+	var index int
+	for buf.Scan() {
+		index++
+		fmt.Println(index, buf.Text())
+	}
 }
 

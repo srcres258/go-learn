@@ -3,7 +3,7 @@ package main
 import (
 	"net"
 	"fmt"
-	"time"
+	"io"
 )
 
 func main() {
@@ -16,14 +16,26 @@ func main() {
 	}
 	fmt.Println("tcp server bind addr:", addr.String())
 	for {
-		conn, err := listen.Accept()
+		// 等待连接
+		conn, err := listen.AcceptTCP()
 		if err != nil {
+			fmt.Println("Accept err:", err)
 			break
 		}
-		fmt.Println(conn.RemoteAddr())
-		conn.Write([]byte("hello world"))
-		time.Sleep(2 * time.Second)
-		conn.Close()
+		// 获取连接的客户端地址
+		fmt.Println(conn.RemoteAddr().String(), " connect success")
+		// 读取客户端发送的数据
+		for {
+			var buf []byte = make([]byte, 1024)
+			n, err := conn.Read(buf)
+			// 客户端退出
+			if err == io.EOF {
+				fmt.Println(conn.RemoteAddr().String(), " client exit")
+				break
+			}
+			fmt.Println(string(buf[0:n]))
+			conn.Write([]byte("你说的是:" + string(buf[0:n])))
+		}
 	}
 }
 
